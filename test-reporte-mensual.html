@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Reporte Mensual</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; }
+        button { padding: 10px 15px; margin: 5px; background: #007bff; color: white; border: none; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        .log { background: #f8f9fa; padding: 10px; margin: 10px 0; border-left: 4px solid #007bff; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test Reporte Mensual</h1>
+    
+    <div class="test-section">
+        <h3>1. Verificar Campo de Mes</h3>
+        <input type="month" id="mes-test" value="">
+        <button onclick="verificarCampoMes()">Verificar Campo</button>
+        <div id="resultado-campo" class="log"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>2. Crear Datos de Prueba</h3>
+        <button onclick="crearDatosPrueba()">Crear Datos</button>
+        <div id="resultado-datos" class="log"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>3. Probar Filtrado por Mes</h3>
+        <button onclick="probarFiltrado()">Probar Filtrado</button>
+        <div id="resultado-filtrado" class="log"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>4. Generar Reporte</h3>
+        <button onclick="generarReporte()">Generar Reporte</button>
+        <div id="resultado-reporte" class="log"></div>
+    </div>
+
+    <script>
+        // Simular historial
+        let historial = [];
+        
+        function verificarCampoMes() {
+            const campo = document.getElementById('mes-test');
+            const resultado = document.getElementById('resultado-campo');
+            
+            resultado.innerHTML = `
+                <strong>Campo encontrado:</strong> ${campo ? 'SÍ' : 'NO'}<br>
+                <strong>Valor actual:</strong> ${campo.value}<br>
+                <strong>Tipo:</strong> ${campo.type}<br>
+                <strong>ID:</strong> ${campo.id}
+            `;
+        }
+        
+        function crearDatosPrueba() {
+            historial = [];
+            
+            // Crear datos para diferentes meses
+            const hoy = new Date();
+            const mesActual = hoy.getMonth();
+            const añoActual = hoy.getFullYear();
+            
+            // Datos para mes actual
+            const fechaActual = `${añoActual}-${String(mesActual + 1).padStart(2, '0')}-15`;
+            historial.push({
+                fecha: fechaActual,
+                tipo: 'entrada',
+                producto: 'Producto Test 1',
+                cantidad: 100,
+                sede: 'BODEGA CENTRAL',
+                lote: 'LOTE-TEST-001'
+            });
+            
+            // Datos para mes anterior
+            const mesAnterior = mesActual === 0 ? 11 : mesActual - 1;
+            const añoAnterior = mesActual === 0 ? añoActual - 1 : añoActual;
+            const fechaAnterior = `${añoAnterior}-${String(mesAnterior + 1).padStart(2, '0')}-20`;
+            historial.push({
+                fecha: fechaAnterior,
+                tipo: 'salida',
+                producto: 'Producto Test 2',
+                cantidad: 50,
+                sede: 'BODEGA CENTRAL',
+                sedeDestino: 'SEDE TEST',
+                lote: 'LOTE-TEST-002'
+            });
+            
+            const resultado = document.getElementById('resultado-datos');
+            resultado.innerHTML = `
+                <strong>Datos creados:</strong> ${historial.length} movimientos<br>
+                <strong>Fechas:</strong> ${fechaActual}, ${fechaAnterior}<br>
+                <strong>Historial:</strong> ${JSON.stringify(historial, null, 2)}
+            `;
+        }
+        
+        function probarFiltrado() {
+            const mesSeleccionado = document.getElementById('mes-test').value;
+            const resultado = document.getElementById('resultado-filtrado');
+            
+            if (!mesSeleccionado) {
+                resultado.innerHTML = '<strong>Error:</strong> No hay mes seleccionado';
+                return;
+            }
+            
+            // Obtener el primer y último día del mes seleccionado
+            const [year, month] = mesSeleccionado.split('-');
+            const primerDia = `${year}-${month}-01`;
+            const ultimoDia = new Date(parseInt(year), parseInt(month), 0).toISOString().split('T')[0];
+            
+            // Filtrar movimientos del mes seleccionado
+            let movimientosFiltrados = historial.filter(movimiento => {
+                const fechaMovimiento = movimiento.fecha;
+                return fechaMovimiento >= primerDia && fechaMovimiento <= ultimoDia;
+            });
+            
+            resultado.innerHTML = `
+                <strong>Mes seleccionado:</strong> ${mesSeleccionado}<br>
+                <strong>Rango de fechas:</strong> ${primerDia} a ${ultimoDia}<br>
+                <strong>Movimientos filtrados:</strong> ${movimientosFiltrados.length}<br>
+                <strong>Movimientos:</strong> ${JSON.stringify(movimientosFiltrados, null, 2)}
+            `;
+        }
+        
+        function generarReporte() {
+            const mesSeleccionado = document.getElementById('mes-test').value;
+            const resultado = document.getElementById('resultado-reporte');
+            
+            if (!mesSeleccionado) {
+                resultado.innerHTML = '<strong>Error:</strong> No hay mes seleccionado';
+                return;
+            }
+            
+            if (historial.length === 0) {
+                resultado.innerHTML = '<strong>Error:</strong> No hay datos en el historial';
+                return;
+            }
+            
+            // Obtener el primer y último día del mes seleccionado
+            const [year, month] = mesSeleccionado.split('-');
+            const primerDia = `${year}-${month}-01`;
+            const ultimoDia = new Date(parseInt(year), parseInt(month), 0).toISOString().split('T')[0];
+            
+            // Filtrar movimientos del mes seleccionado
+            let movimientosFiltrados = historial.filter(movimiento => {
+                const fechaMovimiento = movimiento.fecha;
+                return fechaMovimiento >= primerDia && fechaMovimiento <= ultimoDia;
+            });
+            
+            if (movimientosFiltrados.length === 0) {
+                resultado.innerHTML = `
+                    <strong>No hay movimientos en el mes:</strong> ${mesSeleccionado}<br>
+                    <strong>Rango:</strong> ${primerDia} a ${ultimoDia}<br>
+                    <strong>Historial disponible:</strong> ${historial.length} movimientos
+                `;
+                return;
+            }
+            
+            // Generar reporte simple
+            let reporteHTML = `<h4>📊 REPORTE MENSUAL - ${mesSeleccionado}</h4>`;
+            reporteHTML += `<p><strong>Total movimientos:</strong> ${movimientosFiltrados.length}</p>`;
+            
+            // Agrupar por tipo
+            let movimientosAgrupados = {};
+            movimientosFiltrados.forEach(movimiento => {
+                const tipoMovimiento = movimiento.tipo === 'entrada' ? '📥 Entradas' : 
+                                      movimiento.tipo === 'salida' ? '📤 Salidas' : '↩️ Devoluciones';
+                if (!movimientosAgrupados[tipoMovimiento]) {
+                    movimientosAgrupados[tipoMovimiento] = [];
+                }
+                movimientosAgrupados[tipoMovimiento].push(movimiento);
+            });
+            
+            Object.keys(movimientosAgrupados).forEach(grupo => {
+                const totalProductos = movimientosAgrupados[grupo].length;
+                const totalCantidad = movimientosAgrupados[grupo].reduce((sum, mov) => sum + mov.cantidad, 0);
+                
+                reporteHTML += `
+                    <div style="margin: 10px 0; padding: 10px; background: #f0f0f0;">
+                        <h5>${grupo}</h5>
+                        <p><strong>Total productos:</strong> ${totalProductos} | <strong>Total cantidad:</strong> ${totalCantidad}</p>
+                        <ul>
+                `;
+                
+                movimientosAgrupados[grupo].forEach(movimiento => {
+                    reporteHTML += `
+                        <li><strong>${movimiento.producto}</strong> - ${movimiento.cantidad} unidades - ${movimiento.fecha} - ${movimiento.lote || 'Sin lote'}</li>
+                    `;
+                });
+                
+                reporteHTML += `</ul></div>`;
+            });
+            
+            resultado.innerHTML = reporteHTML;
+        }
+        
+        // Inicializar campo de mes
+        window.onload = function() {
+            const mesActual = new Date().toISOString().split('T')[0].substring(0, 7);
+            document.getElementById('mes-test').value = mesActual;
+            console.log('Mes inicializado:', mesActual);
+        };
+    </script>
+</body>
+</html>

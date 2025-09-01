@@ -1,0 +1,26 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Permitir acceso completo a la colección de inventario
+    match /inventario/{document} {
+      allow read, write: if true;
+    }
+    
+    // Permitir acceso completo a la colección de historial
+    match /historial/{document} {
+      allow read, write: if true;
+    }
+    
+    // Permitir acceso completo a la colección de test (para verificación de conexión)
+    match /test/{document} {
+      allow read, write: if true;
+    }
+    
+    // Regla por defecto - denegar todo lo demás
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
+
+

@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagnóstico Firebase - PAE Digital</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+        
+        .status-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            border-left: 5px solid #ddd;
+        }
+        
+        .status-card.success {
+            border-left-color: #28a745;
+            background: #d4edda;
+        }
+        
+        .status-card.error {
+            border-left-color: #dc3545;
+            background: #f8d7da;
+        }
+        
+        .status-card.warning {
+            border-left-color: #ffc107;
+            background: #fff3cd;
+        }
+        
+        .status-card.info {
+            border-left-color: #17a2b8;
+            background: #d1ecf1;
+        }
+        
+        .status-title {
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+        
+        .status-message {
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .status-details {
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 0.9em;
+            margin-top: 10px;
+            white-space: pre-wrap;
+        }
+        
+        .button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .test-section {
+            margin: 30px 0;
+            padding: 20px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+        }
+        
+        .test-section h3 {
+            margin-top: 0;
+            color: #495057;
+        }
+        
+        .log-container {
+            background: #1e1e1e;
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 15px;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #28a745, #20c997);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Diagnóstico Firebase - PAE Digital</h1>
+        
+        <div class="test-section">
+            <h3>📊 Estado General del Sistema</h3>
+            <div id="status-general" class="status-card">
+                <div class="status-title">🔄 Verificando...</div>
+                <div class="status-message">Inicializando diagnóstico...</div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>🔥 Pruebas de Firebase</h3>
+            <button class="button" onclick="ejecutarPruebasFirebase()">🚀 Ejecutar Pruebas Completas</button>
+            <button class="button" onclick="verificarConexion()">🔌 Verificar Conexión</button>
+            <button class="button" onclick="probarEscritura()">✍️ Probar Escritura</button>
+            <button class="button" onclick="probarLectura()">📖 Probar Lectura</button>
+            
+            <div class="progress-bar">
+                <div id="progress-fill" class="progress-fill"></div>
+            </div>
+            
+            <div id="log-firebase" class="log-container"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>💾 Pruebas de Almacenamiento Local</h3>
+            <button class="button" onclick="probarLocalStorage()">💾 Probar LocalStorage</button>
+            <button class="button" onclick="limpiarLocalStorage()">🗑️ Limpiar LocalStorage</button>
+            
+            <div id="log-local" class="log-container"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>🌐 Pruebas de Conectividad</h3>
+            <button class="button" onclick="verificarInternet()">🌐 Verificar Internet</button>
+            <button class="button" onclick="probarAPIs()">🔗 Probar APIs</button>
+            
+            <div id="log-network" class="log-container"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>📋 Reporte Completo</h3>
+            <button class="button" onclick="generarReporteCompleto()">📊 Generar Reporte</button>
+            <button class="button" onclick="exportarDiagnostico()">💾 Exportar Diagnóstico</button>
+            
+            <div id="reporte-completo" class="status-card info">
+                <div class="status-title">📋 Reporte de Diagnóstico</div>
+                <div id="reporte-contenido" class="status-details">
+                    Haz clic en "Generar Reporte" para ver el diagnóstico completo del sistema.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="firebase-sync.js"></script>
+
+    <script>
+        // Variables globales para el diagnóstico
+        let diagnosticoCompleto = {
+            timestamp: new Date(),
+            firebase: {},
+            localStorage: {},
+            network: {},
+            sistema: {}
+        };
+
+        // Función para agregar logs
+        function agregarLog(container, mensaje, tipo = 'info') {
+            const logContainer = document.getElementById(container);
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = `[${timestamp}] ${mensaje}\n`;
+            
+            logContainer.textContent += logEntry;
+            logContainer.scrollTop = logContainer.scrollHeight;
+            
+            console.log(`[${tipo.toUpperCase()}] ${mensaje}`);
+        }
+
+        // Función para actualizar progreso
+        function actualizarProgreso(porcentaje) {
+            document.getElementById('progress-fill').style.width = porcentaje + '%';
+        }
+
+        // Función para actualizar estado general
+        function actualizarEstadoGeneral(titulo, mensaje, tipo = 'info') {
+            const statusCard = document.getElementById('status-general');
+            statusCard.className = `status-card ${tipo}`;
+            statusCard.innerHTML = `
+                <div class="status-title">${titulo}</div>
+                <div class="status-message">${mensaje}</div>
+            `;
+        }
+
+        // Verificar estado inicial
+        async function verificarEstadoInicial() {
+            agregarLog('log-firebase', '🔍 Iniciando verificación del sistema...');
+            
+            // Verificar Firebase
+            if (typeof firebase !== 'undefined') {
+                diagnosticoCompleto.firebase.sdkCargado = true;
+                agregarLog('log-firebase', '✅ Firebase SDK cargado correctamente');
+            } else {
+                diagnosticoCompleto.firebase.sdkCargado = false;
+                agregarLog('log-firebase', '❌ Firebase SDK no está cargado');
+            }
+
+            // Verificar LocalStorage
+            try {
+                localStorage.setItem('test', 'test');
+                localStorage.removeItem('test');
+                diagnosticoCompleto.localStorage.disponible = true;
+                agregarLog('log-local', '✅ LocalStorage disponible');
+            } catch (error) {
+                diagnosticoCompleto.localStorage.disponible = false;
+                agregarLog('log-local', '❌ LocalStorage no disponible: ' + error.message);
+            }
+
+            // Verificar conexión a internet
+            diagnosticoCompleto.network.online = navigator.onLine;
+            agregarLog('log-network', navigator.onLine ? '✅ Conexión a internet disponible' : '❌ Sin conexión a internet');
+
+            actualizarEstadoGeneral('✅ Diagnóstico Inicializado', 'Sistema listo para pruebas');
+        }
+
+        // Verificar conexión de Firebase
+        async function verificarConexion() {
+            agregarLog('log-firebase', '🔌 Verificando conexión a Firebase...');
+            
+            try {
+                const resultado = await verificarFirebase();
+                diagnosticoCompleto.firebase.conectado = resultado.exito;
+                
+                if (resultado.exito) {
+                    agregarLog('log-firebase', '✅ Firebase conectado correctamente');
+                    actualizarProgreso(25);
+                } else {
+                    agregarLog('log-firebase', '❌ Error de conexión: ' + resultado.mensaje);
+                }
+            } catch (error) {
+                diagnosticoCompleto.firebase.conectado = false;
+                agregarLog('log-firebase', '❌ Error verificando Firebase: ' + error.message);
+            }
+        }
+
+        // Probar escritura en Firebase
+        async function probarEscritura() {
+            agregarLog('log-firebase', '✍️ Probando escritura en Firebase...');
+            
+            try {
+                const db = firebase.firestore();
+                const testDoc = db.collection('diagnostico').doc('test-escritura');
+                
+                const datosTest = {
+                    timestamp: new Date(),
+                    mensaje: 'Prueba de escritura desde diagnóstico',
+                    valor: Math.random()
+                };
+                
+                await testDoc.set(datosTest);
+                agregarLog('log-firebase', '✅ Escritura exitosa en Firebase');
+                diagnosticoCompleto.firebase.escritura = true;
+                actualizarProgreso(50);
+                
+                // Limpiar documento de prueba
+                await testDoc.delete();
+                agregarLog('log-firebase', '🧹 Documento de prueba eliminado');
+                
+            } catch (error) {
+                agregarLog('log-firebase', '❌ Error en escritura: ' + error.message);
+                diagnosticoCompleto.firebase.escritura = false;
+            }
+        }
+
+        // Probar lectura desde Firebase
+        async function probarLectura() {
+            agregarLog('log-firebase', '📖 Probando lectura desde Firebase...');
+            
+            try {
+                const db = firebase.firestore();
+                const testDoc = db.collection('diagnostico').doc('test-lectura');
+                
+                // Crear documento de prueba
+                await testDoc.set({
+                    timestamp: new Date(),
+                    mensaje: 'Documento de prueba para lectura'
+                });
+                
+                // Leer documento
+                const doc = await testDoc.get();
+                
+                if (doc.exists) {
+                    agregarLog('log-firebase', '✅ Lectura exitosa desde Firebase');
+                    diagnosticoCompleto.firebase.lectura = true;
+                    actualizarProgreso(75);
+                } else {
+                    agregarLog('log-firebase', '❌ Documento no encontrado');
+                    diagnosticoCompleto.firebase.lectura = false;
+                }
+                
+                // Limpiar
+                await testDoc.delete();
+                
+            } catch (error) {
+                agregarLog('log-firebase', '❌ Error en lectura: ' + error.message);
+                diagnosticoCompleto.firebase.lectura = false;
+            }
+        }
+
+        // Ejecutar todas las pruebas de Firebase
+        async function ejecutarPruebasFirebase() {
+            agregarLog('log-firebase', '🚀 Iniciando pruebas completas de Firebase...');
+            actualizarProgreso(0);
+            
+            await verificarConexion();
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            await probarEscritura();
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            await probarLectura();
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            actualizarProgreso(100);
+            agregarLog('log-firebase', '✅ Pruebas de Firebase completadas');
+        }
+
+        // Probar LocalStorage
+        function probarLocalStorage() {
+            agregarLog('log-local', '💾 Probando LocalStorage...');
+            
+            try {
+                const datosTest = {
+                    timestamp: new Date(),
+                    mensaje: 'Prueba de LocalStorage',
+                    numeros: [1, 2, 3, 4, 5]
+                };
+                
+                localStorage.setItem('diagnostico-test', JSON.stringify(datosTest));
+                agregarLog('log-local', '✅ Datos escritos en LocalStorage');
+                
+                const datosLeidos = JSON.parse(localStorage.getItem('diagnostico-test'));
+                agregarLog('log-local', '✅ Datos leídos desde LocalStorage');
+                
+                localStorage.removeItem('diagnostico-test');
+                agregarLog('log-local', '🧹 Datos de prueba eliminados');
+                
+                diagnosticoCompleto.localStorage.funcional = true;
+                
+            } catch (error) {
+                agregarLog('log-local', '❌ Error en LocalStorage: ' + error.message);
+                diagnosticoCompleto.localStorage.funcional = false;
+            }
+        }
+
+        // Limpiar LocalStorage
+        function limpiarLocalStorage() {
+            agregarLog('log-local', '🗑️ Limpiando LocalStorage...');
+            
+            try {
+                const keys = Object.keys(localStorage);
+                let eliminados = 0;
+                
+                keys.forEach(key => {
+                    if (key.startsWith('diagnostico-') || key.startsWith('test-')) {
+                        localStorage.removeItem(key);
+                        eliminados++;
+                    }
+                });
+                
+                agregarLog('log-local', `✅ ${eliminados} elementos de prueba eliminados`);
+                
+            } catch (error) {
+                agregarLog('log-local', '❌ Error limpiando LocalStorage: ' + error.message);
+            }
+        }
+
+        // Verificar conexión a internet
+        function verificarInternet() {
+            agregarLog('log-network', '🌐 Verificando conectividad...');
+            
+            const online = navigator.onLine;
+            diagnosticoCompleto.network.online = online;
+            
+            if (online) {
+                agregarLog('log-network', '✅ Conexión a internet disponible');
+            } else {
+                agregarLog('log-network', '❌ Sin conexión a internet');
+            }
+            
+            // Probar conexión a servicios externos
+            fetch('https://www.google.com/favicon.ico', { mode: 'no-cors' })
+                .then(() => {
+                    agregarLog('log-network', '✅ Conexión a servicios externos funcionando');
+                    diagnosticoCompleto.network.externos = true;
+                })
+                .catch(() => {
+                    agregarLog('log-network', '⚠️ Problemas con servicios externos');
+                    diagnosticoCompleto.network.externos = false;
+                });
+        }
+
+        // Probar APIs
+        function probarAPIs() {
+            agregarLog('log-network', '🔗 Probando APIs...');
+            
+            // Probar Firebase
+            if (typeof firebase !== 'undefined') {
+                agregarLog('log-network', '✅ API de Firebase disponible');
+                diagnosticoCompleto.network.firebaseAPI = true;
+            } else {
+                agregarLog('log-network', '❌ API de Firebase no disponible');
+                diagnosticoCompleto.network.firebaseAPI = false;
+            }
+            
+            // Probar SweetAlert2
+            if (typeof Swal !== 'undefined') {
+                agregarLog('log-network', '✅ API de SweetAlert2 disponible');
+                diagnosticoCompleto.network.sweetAlertAPI = true;
+            } else {
+                agregarLog('log-network', '❌ API de SweetAlert2 no disponible');
+                diagnosticoCompleto.network.sweetAlertAPI = false;
+            }
+            
+            // Probar SheetJS
+            if (typeof XLSX !== 'undefined') {
+                agregarLog('log-network', '✅ API de SheetJS disponible');
+                diagnosticoCompleto.network.sheetJSAPI = true;
+            } else {
+                agregarLog('log-network', '❌ API de SheetJS no disponible');
+                diagnosticoCompleto.network.sheetJSAPI = false;
+            }
+        }
+
+        // Generar reporte completo
+        function generarReporteCompleto() {
+            agregarLog('log-firebase', '📊 Generando reporte completo...');
+            
+            diagnosticoCompleto.timestamp = new Date();
+            
+            const reporte = `
+DIAGNÓSTICO COMPLETO DEL SISTEMA PAE DIGITAL
+============================================
+
+Fecha y hora: ${diagnosticoCompleto.timestamp.toLocaleString()}
+
+🔥 FIREBASE:
+- SDK Cargado: ${diagnosticoCompleto.firebase.sdkCargado ? '✅ Sí' : '❌ No'}
+- Conectado: ${diagnosticoCompleto.firebase.conectado ? '✅ Sí' : '❌ No'}
+- Escritura: ${diagnosticoCompleto.firebase.escritura ? '✅ Funciona' : '❌ Falló'}
+- Lectura: ${diagnosticoCompleto.firebase.lectura ? '✅ Funciona' : '❌ Falló'}
+
+💾 LOCALSTORAGE:
+- Disponible: ${diagnosticoCompleto.localStorage.disponible ? '✅ Sí' : '❌ No'}
+- Funcional: ${diagnosticoCompleto.localStorage.funcional ? '✅ Sí' : '❌ No'}
+
+🌐 RED:
+- Conexión Internet: ${diagnosticoCompleto.network.online ? '✅ Sí' : '❌ No'}
+- Servicios Externos: ${diagnosticoCompleto.network.externos ? '✅ Funcionan' : '❌ Fallan'}
+- API Firebase: ${diagnosticoCompleto.network.firebaseAPI ? '✅ Disponible' : '❌ No disponible'}
+- API SweetAlert2: ${diagnosticoCompleto.network.sweetAlertAPI ? '✅ Disponible' : '❌ No disponible'}
+- API SheetJS: ${diagnosticoCompleto.network.sheetJSAPI ? '✅ Disponible' : '❌ No disponible'}
+
+📋 RESUMEN:
+${generarResumenDiagnostico()}
+            `;
+            
+            document.getElementById('reporte-contenido').textContent = reporte;
+            agregarLog('log-firebase', '✅ Reporte generado correctamente');
+        }
+
+        // Generar resumen del diagnóstico
+        function generarResumenDiagnostico() {
+            const totalPruebas = 8;
+            let pruebasExitosas = 0;
+            
+            if (diagnosticoCompleto.firebase.sdkCargado) pruebasExitosas++;
+            if (diagnosticoCompleto.firebase.conectado) pruebasExitosas++;
+            if (diagnosticoCompleto.localStorage.disponible) pruebasExitosas++;
+            if (diagnosticoCompleto.localStorage.funcional) pruebasExitosas++;
+            if (diagnosticoCompleto.network.online) pruebasExitosas++;
+            if (diagnosticoCompleto.network.firebaseAPI) pruebasExitosas++;
+            if (diagnosticoCompleto.network.sweetAlertAPI) pruebasExitosas++;
+            if (diagnosticoCompleto.network.sheetJSAPI) pruebasExitosas++;
+            
+            const porcentaje = Math.round((pruebasExitosas / totalPruebas) * 100);
+            
+            return `
+Estado general: ${porcentaje}% (${pruebasExitosas}/${totalPruebas} pruebas exitosas)
+
+${porcentaje >= 80 ? '🟢 SISTEMA FUNCIONANDO CORRECTAMENTE' : 
+  porcentaje >= 60 ? '🟡 SISTEMA CON PROBLEMAS MENORES' : 
+  '🔴 SISTEMA CON PROBLEMAS CRÍTICOS'}
+            `;
+        }
+
+        // Exportar diagnóstico
+        function exportarDiagnostico() {
+            const reporte = document.getElementById('reporte-contenido').textContent;
+            const blob = new Blob([reporte], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `diagnostico-pae-digital-${new Date().toISOString().split('T')[0]}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            agregarLog('log-firebase', '💾 Diagnóstico exportado correctamente');
+        }
+
+        // Inicializar cuando se carga la página
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(verificarEstadoInicial, 1000);
+        });
+    </script>
+</body>
+</html>
