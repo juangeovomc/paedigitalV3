@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Favicon PAE Digital</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #FF6B35 0%, #4CAF50 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            color: white;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .favicon-preview {
+            text-align: center;
+            margin: 30px 0;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        .favicon-display {
+            display: inline-block;
+            margin: 10px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+        }
+        .download-section {
+            margin-top: 30px;
+            text-align: center;
+        }
+        .download-btn {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 15px 30px;
+            margin: 10px;
+            border-radius: 25px;
+            text-decoration: none;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+        .download-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .description {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+        .features {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .features h3 {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        .features ul {
+            list-style: none;
+            padding: 0;
+        }
+        .features li {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .features li:before {
+            content: "✅ ";
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Favicon PAE Digital</h1>
+        
+        <div class="description">
+            <p>Favicon profesional y moderno para tu aplicación de inventario PAE Digital</p>
+            <p>Diseñado con los colores oficiales de la Alcaldía de Envigado</p>
+        </div>
+
+        <div class="favicon-preview">
+            <h3>👁️ Vista Previa del Favicon</h3>
+            <div class="favicon-display">
+                <h4>16x16 px</h4>
+                <img src="favicon.svg" width="16" height="16" alt="Favicon 16x16">
+            </div>
+            <div class="favicon-display">
+                <h4>32x32 px</h4>
+                <img src="favicon.svg" width="32" height="32" alt="Favicon 32x32">
+            </div>
+            <div class="favicon-display">
+                <h4>48x48 px</h4>
+                <img src="favicon.svg" width="48" height="48" alt="Favicon 48x48">
+            </div>
+            <div class="favicon-display">
+                <h4>64x64 px</h4>
+                <img src="favicon.svg" width="64" height="64" alt="Favicon 64x64">
+            </div>
+        </div>
+
+        <div class="features">
+            <h3>🚀 Características del Favicon</h3>
+            <ul>
+                <li>Diseño moderno y profesional</li>
+                <li>Colores oficiales de la Alcaldía de Envigado (Naranja y Verde)</li>
+                <li>Gradientes suaves y atractivos</li>
+                <li>Icono representativo de inventario y gestión</li>
+                <li>Formato SVG escalable y de alta calidad</li>
+                <li>Compatible con todos los navegadores modernos</li>
+                <li>Optimizado para diferentes tamaños de pantalla</li>
+            </ul>
+        </div>
+
+        <div class="download-section">
+            <h3>📥 Descargar Favicon</h3>
+            <a href="favicon.svg" download class="download-btn">📱 Descargar SVG</a>
+            <a href="#" onclick="generarICO()" class="download-btn">🖼️ Generar ICO</a>
+        </div>
+    </div>
+
+    <script>
+        function generarICO() {
+            alert('Para generar el archivo ICO, puedes usar herramientas online como:\n\n• favicon.io\n• realfavicongenerator.net\n• favicon-generator.org\n\nO usar el archivo SVG directamente, que es compatible con todos los navegadores modernos.');
+        }
+
+        // Mostrar información sobre el favicon
+        console.log('🎯 Favicon PAE Digital generado exitosamente!');
+        console.log('Colores: Naranja (#FF6B35) y Verde (#4CAF50)');
+        console.log('Formato: SVG escalable y optimizado');
+    </script>
+</body>
+</html>
